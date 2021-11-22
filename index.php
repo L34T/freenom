@@ -50,8 +50,8 @@ use Luolongfei\Libs\Message;
 function customize_error_handler()
 {
     if (!is_null($error = error_get_last())) {
-        Log::error('程序意外终止', $error);
-        Message::send('可能存在错误，这边收集到的错误信息为：' . json_encode($error, JSON_UNESCAPED_UNICODE), '主人，程序意外终止');
+        Log::error('The program terminates unexpectedly', $error);
+        Message::send('Error information：' . json_encode($error, JSON_UNESCAPED_UNICODE), 'Freenom: program terminated unexpectedly');
     }
 }
 
@@ -62,8 +62,8 @@ function customize_error_handler()
  */
 function exception_handler($e)
 {
-    Log::error('未捕获的异常：' . $e->getMessage());
-    Message::send("具体的异常内容是：\n" . $e->getMessage(), '主人，未捕获的异常');
+    Log::error('Uncaught exception：' . $e->getMessage());
+    Message::send("Exception content：\n" . $e->getMessage(), 'Freenom: uncaught exception');
 }
 
 function main_handler($event, $context)
@@ -76,11 +76,11 @@ function main_handler($event, $context)
 
         $class::getInstance()->$fn();
 
-        return '云函数执行成功。';
+        return 'Cloud function executed successfully.';
     } catch (\Exception $e) {
-        system_log(sprintf('执行出错：<red>%s</red>', $e->getMessage()), $e->getTrace());
-        Message::send("执行出错：\n" . $e->getMessage(), '主人，捕获异常');
+        system_log(sprintf('Execution error：<red>%s</red>', $e->getMessage()), $e->getTrace());
+        Message::send("Execution error：\n" . $e->getMessage(), 'Freenom: catch exception');
     }
 
-    return '云函数执行失败。';
+    return 'The execution of the cloud function failed.';
 }

@@ -93,7 +93,7 @@ class FreeNom extends Base
             'proxy' => config('freenom_proxy'),
         ]);
 
-        system_log(sprintf('当前程序版本 %s', self::VERSION));
+        system_log(sprintf('Current program version %s', self::VERSION));
     }
 
     private function __clone()
@@ -244,16 +244,16 @@ class FreeNom extends Base
                 'renewalFailuresArr' => $renewalFailuresArr,
                 'domainStatusArr' => $domainStatusArr,
             ];
-            $result = Message::send('', '主人，我刚刚帮你续期域名啦~', 2, $data);
+            $result = Message::send('', 'Freenom: I just renewed the domain name for you~', 2, $data);
 
             system_log(sprintf(
-                '恭喜，成功续期 <green>%d</green> 个域名，失败 <green>%d</green> 个域名。%s',
+                'Congrats, successfully renewed <green>%d</green> domains, but failed <green>%d</green> domains. %s',
                 count($renewalSuccessArr),
                 count($renewalFailuresArr),
-                $result ? '详细的续期结果已送信成功，请注意查收。' : ''
+                $result ? 'renewal result sent successfully, check it carefully.' : ''
             ));
 
-            Log::info(sprintf("账户：%s\n续期结果如下：\n", $this->username), $data);
+            Log::info(sprintf("Account: %s\nrenewal results：\n", $this->username), $data);
 
             return true;
         }
@@ -264,9 +264,9 @@ class FreeNom extends Base
                 'username' => $this->username,
                 'domainStatusArr' => $domainStatusArr,
             ];
-            Message::send('', '报告，今天没有域名需要续期', 3, $data);
+            Message::send('', 'Freenom: no domain names need to be renewed today', 3, $data);
         } else {
-            system_log('当前通知频率为「仅当有续期操作时」，故本次不会推送通知');
+            system_log('Notification settings(.env) suppressed sending push notifications this time');
         }
 
         system_log(sprintf('%s：<green>执行成功，今次没有需要续期的域名。</green>', $this->username));
@@ -303,7 +303,7 @@ class FreeNom extends Base
 
             return stripos($resp, 'Order Confirmation') !== false;
         } catch (\Exception $e) {
-            $errorMsg = sprintf('续期请求出错：%s，域名 ID：%s（账户：%s）', $e->getMessage(), $id, $this->username);
+            $errorMsg = sprintf('Error in renewal request: %s, domain ID:%s（account:%s）', $e->getMessage(), $id, $this->username);
             system_log($errorMsg);
             Message::send($errorMsg);
 
@@ -393,12 +393,12 @@ class FreeNom extends Base
     private function sendExceptionReport($e)
     {
         Message::send(sprintf(
-            '具体是在%s文件的第%d行，抛出了一个异常。异常的内容是%s，快去看看吧。（账户：%s）',
+            'Thrown exception from %s:%d. The abnormal content is: %s (Account: %s)',
             $e->getFile(),
             $e->getLine(),
             $e->getMessage(),
             $this->username
-        ), '主人，出错了，' . $e->getMessage());
+        ), 'Freenom: something went wrong,' . $e->getMessage());
     }
 
     /**
@@ -409,7 +409,7 @@ class FreeNom extends Base
     {
         $accounts = $this->getAccounts();
 
-        system_log(sprintf('共发现 <green>%d</green> 个 freenom 账户，处理中', count($accounts)));
+        system_log(sprintf('<green>%d</green> freenom accounts found, processing', count($accounts)));
 
         foreach ($accounts as $account) {
             try {
@@ -425,10 +425,10 @@ class FreeNom extends Base
 
                 $this->renewAllDomains($allDomains, $token);
             } catch (LlfException $e) {
-                system_log(sprintf('出错：<red>%s</red>', $e->getMessage()));
+                system_log(sprintf('Error: <red>%s</red>', $e->getMessage()));
                 $this->sendExceptionReport($e);
             } catch (\Exception $e) {
-                system_log(sprintf('出错：<red>%s</red>', $e->getMessage()), $e->getTrace());
+                system_log(sprintf('Error: <red>%s</red>', $e->getMessage()), $e->getTrace());
                 $this->sendExceptionReport($e);
             }
         }

@@ -95,7 +95,7 @@ class MigrateEnvFile extends Base
             return true;
         }
 
-        $envExampleVer = $this->getEnvFileVer('.env.example');
+        $envExampleVer = $this->getEnvFileVer('.env.en.example');
 
         return version_compare($envExampleVer, $envVer, '>');
     }
@@ -118,11 +118,11 @@ class MigrateEnvFile extends Base
         $file = $this->getEnvFilePath($filename);
 
         if (!file_exists($file)) {
-            throw new \Exception('文件不存在：' . $file);
+            throw new \Exception('File not exist：' . $file);
         }
 
         if (($fileContent = file_get_contents($file)) === false) {
-            throw new \Exception('读取文件内容失败：' . $file);
+            throw new \Exception('Failed to read file content：' . $file);
         }
 
         if (!preg_match('/^ENV_FILE_VERSION=(?P<env_file_version>.*?)$/im', $fileContent, $m)) {
@@ -143,7 +143,7 @@ class MigrateEnvFile extends Base
     public function backup()
     {
         if (copy($this->getEnvFilePath(), $this->getEnvFilePath('.env.old')) === false) {
-            throw new \Exception('备份 .env 文件到 .env.old 文件时出错');
+            throw new \Exception('Error while backing .env to .env.old');
         }
 
         return true;
@@ -157,8 +157,8 @@ class MigrateEnvFile extends Base
      */
     public function genNewEnvFile()
     {
-        if (copy($this->getEnvFilePath('.env.example'), $this->getEnvFilePath('.env')) === false) {
-            throw new \Exception('从 .env.example 文件生成 .env 文件时出错');
+        if (copy($this->getEnvFilePath('.env.en.example'), $this->getEnvFilePath('.env')) === false) {
+            throw new \Exception('Error while generating .env from .env.en.example');
         }
 
         return true;
@@ -239,22 +239,22 @@ class MigrateEnvFile extends Base
                 return true;
             }
 
-            system_log('检测到你的 .env 文件内容过旧，程式将根据 .env.example 文件自动更新相关配置项，不要慌张，此操作对已有数据不会有任何影响');
+            system_log('.env update! Merging with .env.example. Env data must be safe');
 
             $this->backup();
-            system_log(sprintf('<green>已完成 .env 文件备份</green>，旧文件位置为 %s/.env.old', ROOT_PATH));
+            system_log(sprintf('<green>.env backup completed</green>, backup file location is %s/.env.old', ROOT_PATH));
 
             $this->genNewEnvFile();
-            system_log('已生成新 .env 文件');
+            system_log('New .env created');
 
             $this->migrateData($this->allOldEnvValues);
-            system_log(sprintf('<green>数据迁移完成</green>，共迁移 %d 条环境变量数据', $this->migrateNum));
+            system_log(sprintf('<green>Data merging completed</green> %d pieces of env vars data migrated', $this->migrateNum));
 
-            system_log('<green>恭喜，已成功完成 .env 文件升级</green>');
+            system_log('<green>Congrats! .env upgrade successfully completed</green>');
 
             return true;
         } catch (\Exception $e) {
-            system_log('升级 .env 文件出错：' . $e->getMessage());
+            system_log('Error upgrading .env file:' . $e->getMessage());
 
             return false;
         }

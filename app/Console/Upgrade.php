@@ -94,7 +94,7 @@ class Upgrade extends Base
                 || !isset($resp['name'])
                 || !isset($resp['published_at'])
                 || !isset($resp['html_url'])) {
-                throw new \Exception('Github 返回的数据与预期不一致：' . json_encode($resp, JSON_UNESCAPED_UNICODE));
+                throw new \Exception('Github return data which inconsistent with expectations：' . json_encode($resp, JSON_UNESCAPED_UNICODE));
             }
 
             $this->releaseInfo = $resp;
@@ -104,7 +104,7 @@ class Upgrade extends Base
 
             return version_compare($this->latestVer, $this->currVer, '>');
         } catch (\Exception $e) {
-            Log::error('检测升级出错：' . $e->getMessage());
+            Log::error('Error detecting upgrade：' . $e->getMessage());
 
             return false;
         }
@@ -211,34 +211,34 @@ class Upgrade extends Base
 
             if (IS_SCF) {
                 system_log(sprintf(
-                    'FreeNom 续期工具有新的版本可用，你当前版本为 v%s，最新版本为 v%s。关于新版的详细信息，请访问：%s',
+                    'FreeNom new version found! Curent v%s, latest v%s. More info on: %s',
                     $this->currVer,
                     $this->latestVer,
                     $this->releaseInfo['html_url']
                 ));
             } else {
                 system_log(sprintf(
-                    '<green>FreeNom 续期工具有新的版本可用，最新版本为 v%s（%s）</green>',
+                    '<green>FreeNom new version of renewal tool available. The latest version v%s（%s）</green>',
                     $this->latestVer,
                     $this->releaseInfo['html_url']
                 ));
 
                 $result = Message::send(
                     $this->genMsgContent(),
-                    sprintf('主人，FreeNom 续期工具有新的版本（v%s）可用，新版相关情况已给到你', $this->latestVer),
+                    sprintf('Freenom: %s version available by renewal tool.', $this->latestVer),
                     4,
                     $this->releaseInfo
                 );
 
                 if ($result) {
                     $this->rememberVer($this->latestVer);
-                    system_log('有关新版的信息已送信给到你，请注意查收。');
+                    system_log('New version notification has been sent, please check it carefully.');
                 }
             }
 
             return true;
         } catch (\Exception $e) {
-            system_log('升级出错：' . $e->getMessage());
+            system_log('Upgrade error：' . $e->getMessage());
 
             return false;
         }
@@ -246,7 +246,7 @@ class Upgrade extends Base
 
     public function doUpgrade()
     {
-        // TODO 自动升级
-//        system_log('<green>恭喜，已完成升级。</green>');
+        // TODO 自动升级 // auto update
+//        system_log('<green>Congrats, upgrade completed.</green>');
     }
 }
