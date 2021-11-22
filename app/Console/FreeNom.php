@@ -264,12 +264,12 @@ class FreeNom extends Base
                 'username' => $this->username,
                 'domainStatusArr' => $domainStatusArr,
             ];
-            Message::send('', 'Freenom: no domain names need to be renewed today', 3, $data);
+            Message::send('', 'Freenom: no domains need to be renewed today', 3, $data);
         } else {
             system_log('Notification settings(.env) suppressed sending push notifications this time');
         }
 
-        system_log(sprintf('%s：<green>执行成功，今次没有需要续期的域名。</green>', $this->username));
+        system_log(sprintf('%s：<green>Finished successfully. No domains need to be renewed this time.</green>', $this->username));
 
         return true;
     }

@@ -59,7 +59,7 @@ class TelegramBot extends MessageGateway
      */
     public function genDomainStatusFullMarkDownText(string $username, array $domainStatus)
     {
-        $markDownText = sprintf("Checked account [%s](#). No domains need to be renewed today. All domain names：\n\n", $username);
+        $markDownText = sprintf("Checked account [%s](#). No domains need to be renewed today. All domain names:\n", $username);
 
         $markDownText .= $this->genDomainStatusMarkDownText($domainStatus);
 
@@ -78,7 +78,7 @@ class TelegramBot extends MessageGateway
         $footer = '';
 
         $footer .= "\nDetails: [Freenom renewals](https://my.freenom.com/domains.php?a=renewals) ";
-        $footer .= "\n\n（change NOTICE_FREQ in .env to 0 to limit notifications to renewals only)";
+        $footer .= "\n\(change NOTICE_FREQ in .env to 0 to limit notifications to renewals only\)";
 
         return $footer;
     }
@@ -99,10 +99,10 @@ class TelegramBot extends MessageGateway
         $domainStatusMarkDownText = '';
 
         foreach ($domainStatus as $domain => $daysLeft) {
-            $domainStatusMarkDownText .= sprintf('[%s](http://%s) Expires in *%d* days,', $domain, $domain, $daysLeft);
+            $domainStatusMarkDownText .= sprintf("[%s](http://%s)    expires in   *%d*   days\n", $domain, $domain, $daysLeft);
         }
 
-        $domainStatusMarkDownText = rtrim($domainStatusMarkDownText, ',') . ".\n";
+        //$domainStatusMarkDownText = rtrim($domainStatusMarkDownText, ',') . ".\n";
 
         return $domainStatusMarkDownText;
     }
